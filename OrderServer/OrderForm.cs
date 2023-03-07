@@ -7,12 +7,21 @@ namespace OrderServer
     public partial class OrderForm : System.Windows.Forms.Form
     {
         private int? selectRow = null;
+        private ServerNetworkHandler networkHandler = null;
         public OrderForm()
         {
             InitializeComponent();
         }
+
+        private void OrderForm_Load(object sender, EventArgs e)
+        {
+            networkHandler = new ServerNetworkHandler();
+            fillListView(OrderDbHandler.ReadTable("tblOrder"));
+        }
+
         private void backButton_Click(object sender, EventArgs e)
         {
+            networkHandler.listenerStop();
             this.Owner.Visible = true;
             this.Close();
         }
@@ -31,11 +40,6 @@ namespace OrderServer
                 MessageBox.Show("주문음식이 취소 되었습니다.");
                 selectRow = null;
             }
-        }
-
-        private void OrderForm_Load(object sender, EventArgs e)
-        {
-            fillListView(OrderDbHandler.ReadTable("tblOrder"));
         }
 
         private void fillListView(List<string[]> orders)
