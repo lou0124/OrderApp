@@ -13,44 +13,77 @@ namespace OrderClient
 {
     internal class ClientNetworkHandler
     {
-        public void getMenus()
+        private TcpClient tcpClient = null;
+        private IPEndPoint ipEndPoint = null;
+        private NetworkStream networkStream = null;
+        private BinaryReader binaryReader = null;
+        private BinaryWriter binaryWriter = null;
+        public ClientNetworkHandler()
         {
-            TcpClient tcpClient = new TcpClient();
-            IPEndPoint ipEndPoint = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 3000);
+            tcpClient = new TcpClient();
+            ipEndPoint = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 3000);
+        }
+
+        public void connect()
+        {
             try
             {
                 tcpClient.Connect(ipEndPoint);
-                NetworkStream networkStream = tcpClient.GetStream();
-                BinaryReader binaryReader = new BinaryReader(networkStream);
-                BinaryWriter binaryWriter = new BinaryWriter(networkStream);
-
-                binaryWriter.Write((((byte)Request.MenuList)));
-                Console.WriteLine(binaryReader.ReadString());
+                networkStream = tcpClient.GetStream();
+                binaryReader = new BinaryReader(networkStream);
+                binaryWriter = new BinaryWriter(networkStream);
             }
             catch
             {
-                Console.WriteLine("현재 서버가 주문모드로 켜져있지 않습니다.");
+                Console.WriteLine("현재 서버에 연결할 수 없습니다.");
             }
-            tcpClient.Close();
+        }
+
+        public List<string[]> getMenus()
+        {
+            List<string[]> menus = new List<String[]>();
+            if (checkAvailable())
+            {
+
+                binaryWriter.Write((byte)Request.MenuList);
+                int listSize = binaryReader.ReadInt32();
+                int colunmSize = binaryReader.ReadInt32();
+
+                
+                for (int i = 0; i < listSize; i++)
+                {
+                    List<string> menu = new List<string>();
+                    for (int j = 0; j < colunmSize; j++)
+                        menu.Add(binaryReader.ReadString());
+                    menus.Add(menu.ToArray());
+                }
+            }
+            return menus;
         }
         public void order()  
         {
-            TcpClient tcpClient = new TcpClient(); 
-            IPEndPoint ipEndPoint = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 3000);
-            try 
+            if (checkAvailable())
             {
-                tcpClient.Connect(ipEndPoint);
-                NetworkStream networkStream = tcpClient.GetStream();
-                BinaryReader binaryReader = new BinaryReader(networkStream);
-                BinaryWriter binaryWriter = new BinaryWriter(networkStream);
-
-                binaryWriter.Write((((byte)Request.Order)));
+                binaryWriter.Write((byte)Request.Order);
                 Console.WriteLine(binaryReader.ReadString());
             }
-            catch
-            {
-                Console.WriteLine("현재 서버가 주문모드로 켜져있지 않습니다.");
-            }
+        }
+
+        private bool checkAvailable()
+        {
+            byte checkAvailable = 0;
+            binaryWriter.Write(checkAvailable);
+            bool isAvailable = binaryReader.ReadBoolean();
+            if (!isAvailable)
+                Console.WriteLine("주문 모드가 아닙니다.");
+            return isAvailable;
+        }
+
+        ~ClientNetworkHandler()
+        {
+            binaryWriter.Close();
+            binaryReader.Close();
+            networkStream.Close();
             tcpClient.Close();
         }
     }

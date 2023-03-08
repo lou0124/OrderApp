@@ -64,6 +64,7 @@
             this.Name = "HomeForm";
             this.Text = "HomeForm";
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.HomeForm_FormClosed);
+            this.Load += new System.EventHandler(this.HomeForm_Load);
             this.ResumeLayout(false);
 
         }

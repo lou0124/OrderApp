@@ -17,8 +17,19 @@ namespace OrderServer
     }
     internal class ServerNetworkHandler
     {
+        private static ServerNetworkHandler staticSingleton;
         private TcpListener tcpListener = null;
-        public ServerNetworkHandler()
+        private bool isAvailable = false;
+
+        public static ServerNetworkHandler Instance()
+        {
+            if (staticSingleton == null)
+            {
+                staticSingleton = new ServerNetworkHandler();
+            }
+            return staticSingleton;
+        }
+        public void acceptClientStart()
         {
             tcpListener = new TcpListener(3000);
             tcpListener.Start();
@@ -28,6 +39,14 @@ namespace OrderServer
             thread.Start();
         }
 
+        public void available()
+        {
+            isAvailable = true;
+        }
+        public void unavailable()
+        {
+            isAvailable = false;
+        }
         private void acceptClient()
         {
             while (true)
@@ -52,14 +71,28 @@ namespace OrderServer
             BinaryReader binaryReader = new BinaryReader(networkStream);
             BinaryWriter binaryWriter = new BinaryWriter(networkStream);
 
-            switch (binaryReader.ReadByte())
+            while (tcpClient.Connected)
             {
-                case (byte)Request.MenuList:
-                    binaryWriter.Write("메뉴들");
-                    break;
-                case (byte)Request.Order:
-                    binaryWriter.Write("주문완료");
-                    break;
+                try
+                {
+                    binaryReader.ReadByte();
+                    binaryWriter.Write(isAvailable);
+                    if (!isAvailable)
+                        continue;
+                    switch (binaryReader.ReadByte())
+                    {
+                        case (byte)Request.MenuList:
+                            sendMenus(binaryWriter);
+                            break;
+                        case (byte)Request.Order:
+                            binaryWriter.Write("주문완료");
+                            break;
+                    }
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
+                }
             }
 
             binaryReader.Close();
@@ -69,17 +102,21 @@ namespace OrderServer
             Thread.CurrentThread.Abort();
         }
 
-        public void listenerStop() 
+        private void sendMenus(BinaryWriter binaryWriter)
         {
-            if (tcpListener != null)
+            List<String[]> menus = OrderDbHandler.ReadTable("tblMenu");
+            binaryWriter.Write(menus.Count);
+            if (menus.Count == 0)
+                binaryWriter.Write(0);
+            else
+                binaryWriter.Write(menus[0].Length - 1);
+            foreach (string[] menu in menus)
             {
-                tcpListener.Stop();
-                tcpListener = null;
+                string[] temp = menu.Skip(1).ToArray();
+                foreach (string data in temp)
+                    binaryWriter.Write(data);
             }
-        }
-        ~ServerNetworkHandler()
-        {
-            listenerStop();
+                
         }
     }
 }

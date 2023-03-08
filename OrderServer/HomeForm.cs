@@ -17,6 +17,11 @@ namespace OrderServer
             InitializeComponent();
         }
 
+        private void HomeForm_Load(object sender, EventArgs e)
+        {
+            ServerNetworkHandler.Instance().acceptClientStart();
+        }
+
         private void orderModeButton_Click(object sender, EventArgs e)
         {
             this.Visible = false;

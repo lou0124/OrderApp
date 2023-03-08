@@ -7,7 +7,6 @@ namespace OrderServer
     public partial class OrderForm : System.Windows.Forms.Form
     {
         private int? selectRow = null;
-        private ServerNetworkHandler networkHandler = null;
         public OrderForm()
         {
             InitializeComponent();
@@ -15,19 +14,19 @@ namespace OrderServer
 
         private void OrderForm_Load(object sender, EventArgs e)
         {
-            networkHandler = new ServerNetworkHandler();
+            ServerNetworkHandler.Instance().available();
             fillListView(OrderDbHandler.ReadTable("tblOrder"));
         }
 
         private void backButton_Click(object sender, EventArgs e)
         {
-            networkHandler.listenerStop();
             this.Owner.Visible = true;
             this.Close();
         }
 
         private void Order_FormClosed(object sender, FormClosedEventArgs e)
         {
+            ServerNetworkHandler.Instance().unavailable();
             this.Owner.Visible = true;
         }
 
@@ -36,7 +35,7 @@ namespace OrderServer
             if (selectRow is int valueOfSelectRow)
             {
                 OrderDbHandler.excuteSql("DELETE FROM tblOrder WHERE order_num = " + orderList.Items[valueOfSelectRow].SubItems[0].Text);
-                fillListView(OrderDbHandler.ReadTable("tblOrder"));
+                orderList.Items.RemoveAt(orderList.SelectedIndices[0]);
                 MessageBox.Show("주문음식이 취소 되었습니다.");
                 selectRow = null;
             }
