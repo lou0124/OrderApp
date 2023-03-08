@@ -7,6 +7,8 @@ namespace OrderServer
     public partial class OrderForm : System.Windows.Forms.Form
     {
         private int? selectRow = null;
+        private int orderNumber = 1;
+        private int clientNumber = 1;
         public OrderForm()
         {
             InitializeComponent();
@@ -14,8 +16,34 @@ namespace OrderServer
 
         private void OrderForm_Load(object sender, EventArgs e)
         {
-            ServerNetworkHandler.Instance().available();
-            fillListView(OrderDbHandler.ReadTable("tblOrder"));
+            ServerNetworkHandler.Instance().available(addOrder);
+        }
+
+        private void addOrder(List<string[]> orders)
+        {
+            foreach (string[] order in orders)
+            {
+                string orderNum = orderNumber.ToString();
+                string clientNum = clientNumber.ToString();
+                string menu = order[0];
+                string count = order[1];
+                string totalPrice = order[2];
+                string orderTime = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+                string orderKey = DateTime.Now.ToString("yyyyMMddHHmmss") + orderNum.PadLeft(3, '0');
+
+                OrderDbHandler.excuteSql("INSERT INTO tblOrder " +
+                    "VALUES ('" + orderKey + "', " + orderNum + ", " + clientNum + ", '" + menu + "', " + count + ", " + totalPrice + ", '"+ orderTime + "')");
+
+                ListViewItem listViewItem = new ListViewItem();
+                listViewItem.Text = orderNum;
+                listViewItem.SubItems.Add(clientNum);
+                listViewItem.SubItems.Add(menu);
+                listViewItem.SubItems.Add(count);
+                listViewItem.SubItems.Add(orderTime);
+                orderList.Items.Add(listViewItem);
+                orderNumber = (orderNumber + 1) % 1000;
+            }
+            clientNumber = (clientNumber + 1) % 1000;
         }
 
         private void backButton_Click(object sender, EventArgs e)
@@ -41,26 +69,12 @@ namespace OrderServer
             }
         }
 
-        private void fillListView(List<string[]> orders)
-        {
-            orderList.Items.Clear();
-            foreach (string[] order in orders)
-                orderList.Items.Add(new ListViewItem(order));
-        }
-
         private void orderList_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (orderList.SelectedItems.Count != 0)
                 selectRow = orderList.SelectedItems[0].Index;
             else
                 selectRow = null;
-        }
-
-        private void button1_Click(object sender, EventArgs e)
-        {
-            string format = "yyyy-MM-dd HH:mm:ss";
-            OrderDbHandler.excuteSql("INSERT INTO tblOrder VALUES (100, 100, '사이다', 2, '" + DateTime.Now.ToString(format)  + "')");
-            fillListView(OrderDbHandler.ReadTable("tblOrder"));
         }
     }
 }

@@ -15,12 +15,13 @@ namespace OrderServer
         MenuList,
         Order
     }
+
     internal class ServerNetworkHandler
     {
         private static ServerNetworkHandler staticSingleton;
         private TcpListener tcpListener = null;
         private bool isAvailable = false;
-
+        private Action<List<string[]>> takeOrderAcion;
         public static ServerNetworkHandler Instance()
         {
             if (staticSingleton == null)
@@ -39,13 +40,15 @@ namespace OrderServer
             thread.Start();
         }
 
-        public void available()
+        public void available(Action<List<string[]>> action)
         {
             isAvailable = true;
+            takeOrderAcion = action;
         }
         public void unavailable()
         {
             isAvailable = false;
+            takeOrderAcion = null;
         }
         private void acceptClient()
         {
@@ -85,7 +88,7 @@ namespace OrderServer
                             sendMenus(binaryWriter);
                             break;
                         case (byte)Request.Order:
-                            binaryWriter.Write("주문완료");
+                            takeOrder(binaryReader);
                             break;
                     }
                 }
@@ -117,6 +120,21 @@ namespace OrderServer
                     binaryWriter.Write(data);
             }
                 
+        }
+
+        private void takeOrder(BinaryReader binaryReader)
+        {
+            List<string[]> orders = new List<String[]>();
+            int listSize = binaryReader.ReadInt32();
+            int colunmSize = binaryReader.ReadInt32();
+            for (int i = 0; i < listSize; i++)
+            {
+                List<string> order = new List<string>();
+                for (int j = 0; j < colunmSize; j++)
+                    order.Add(binaryReader.ReadString());
+                orders.Add(order.ToArray());
+            }
+            takeOrderAcion(orders);
         }
     }
 }

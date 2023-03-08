@@ -24,7 +24,7 @@ namespace OrderClient
             ipEndPoint = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 3000);
         }
 
-        public void connect()
+        public bool connect()
         {
             try
             {
@@ -32,51 +32,53 @@ namespace OrderClient
                 networkStream = tcpClient.GetStream();
                 binaryReader = new BinaryReader(networkStream);
                 binaryWriter = new BinaryWriter(networkStream);
+                return true;
             }
             catch
             {
-                Console.WriteLine("현재 서버에 연결할 수 없습니다.");
+                return false;
             }
+        }
+
+        public bool connected()
+        {
+            return tcpClient.Connected;
+        }
+        public bool checkAvailable()
+        {
+            byte checkAvailable = 0;
+            binaryWriter.Write(checkAvailable);
+            return binaryReader.ReadBoolean();
         }
 
         public List<string[]> getMenus()
         {
             List<string[]> menus = new List<String[]>();
-            if (checkAvailable())
-            {
 
-                binaryWriter.Write((byte)Request.MenuList);
-                int listSize = binaryReader.ReadInt32();
-                int colunmSize = binaryReader.ReadInt32();
-
+            binaryWriter.Write((byte)Request.MenuList);
+            int listSize = binaryReader.ReadInt32();
+            int colunmSize = binaryReader.ReadInt32();
                 
-                for (int i = 0; i < listSize; i++)
-                {
-                    List<string> menu = new List<string>();
-                    for (int j = 0; j < colunmSize; j++)
-                        menu.Add(binaryReader.ReadString());
-                    menus.Add(menu.ToArray());
-                }
+            for (int i = 0; i < listSize; i++)
+            {
+                List<string> menu = new List<string>();
+                for (int j = 0; j < colunmSize; j++)
+                    menu.Add(binaryReader.ReadString());
+                menus.Add(menu.ToArray());
             }
             return menus;
         }
-        public void order()  
+        public void order(List<string[]> orders)  
         {
-            if (checkAvailable())
-            {
-                binaryWriter.Write((byte)Request.Order);
-                Console.WriteLine(binaryReader.ReadString());
-            }
-        }
-
-        private bool checkAvailable()
-        {
-            byte checkAvailable = 0;
-            binaryWriter.Write(checkAvailable);
-            bool isAvailable = binaryReader.ReadBoolean();
-            if (!isAvailable)
-                Console.WriteLine("주문 모드가 아닙니다.");
-            return isAvailable;
+            binaryWriter.Write((byte)Request.Order);
+            binaryWriter.Write(orders.Count);
+            if (orders.Count == 0)
+                binaryWriter.Write(0);
+            else 
+                binaryWriter.Write(orders[0].Length);
+            foreach (string[] order in orders)
+                foreach (string data in order)
+                    binaryWriter.Write(data);
         }
 
         ~ClientNetworkHandler()

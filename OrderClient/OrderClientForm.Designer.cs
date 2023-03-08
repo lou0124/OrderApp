@@ -42,6 +42,7 @@
             this.minusButton = new System.Windows.Forms.Button();
             this.totalPriceLabel = new System.Windows.Forms.Label();
             this.priceTitleLabel = new System.Windows.Forms.Label();
+            this.getMenusButton = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // containButton
@@ -71,9 +72,9 @@
             this.price});
             this.menuList.FullRowSelect = true;
             this.menuList.HideSelection = false;
-            this.menuList.Location = new System.Drawing.Point(38, 27);
+            this.menuList.Location = new System.Drawing.Point(38, 46);
             this.menuList.Name = "menuList";
-            this.menuList.Size = new System.Drawing.Size(212, 230);
+            this.menuList.Size = new System.Drawing.Size(212, 211);
             this.menuList.TabIndex = 2;
             this.menuList.UseCompatibleStateImageBehavior = false;
             this.menuList.View = System.Windows.Forms.View.Details;
@@ -170,11 +171,23 @@
             this.priceTitleLabel.TabIndex = 8;
             this.priceTitleLabel.Text = "결제금액:";
             // 
+            // getMenusButton
+            // 
+            this.getMenusButton.Font = new System.Drawing.Font("굴림", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
+            this.getMenusButton.Location = new System.Drawing.Point(2, 1);
+            this.getMenusButton.Name = "getMenusButton";
+            this.getMenusButton.Size = new System.Drawing.Size(30, 30);
+            this.getMenusButton.TabIndex = 9;
+            this.getMenusButton.Text = "↺";
+            this.getMenusButton.UseVisualStyleBackColor = true;
+            this.getMenusButton.Click += new System.EventHandler(this.getMenusButton_Click);
+            // 
             // OrderClientForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(583, 315);
+            this.Controls.Add(this.getMenusButton);
             this.Controls.Add(this.priceTitleLabel);
             this.Controls.Add(this.totalPriceLabel);
             this.Controls.Add(this.minusButton);
@@ -186,7 +199,7 @@
             this.Controls.Add(this.containButton);
             this.Name = "OrderClientForm";
             this.Text = "OrderClient";
-            this.Load += new System.EventHandler(this.OrderClient_Load);
+            this.Shown += new System.EventHandler(this.OrderClientForm_Shown);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -208,6 +221,7 @@
         private System.Windows.Forms.Button minusButton;
         private System.Windows.Forms.Label totalPriceLabel;
         private System.Windows.Forms.Label priceTitleLabel;
+        private System.Windows.Forms.Button getMenusButton;
     }
 }
 

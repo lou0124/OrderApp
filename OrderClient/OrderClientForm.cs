@@ -20,11 +20,10 @@ namespace OrderClient
             InitializeComponent();
         }
 
-        private void OrderClient_Load(object sender, EventArgs e)
+        private void OrderClientForm_Shown(object sender, EventArgs e)
         {
             clientNetworkHandler = new ClientNetworkHandler();
-            clientNetworkHandler.connect();
-            fillListView(clientNetworkHandler.getMenus());
+            connect();
         }
 
         private void containButton_Click(object sender, EventArgs e)
@@ -52,7 +51,23 @@ namespace OrderClient
 
         private void orderButton_Click(object sender, EventArgs e)
         {
-            clientNetworkHandler.order();
+            List<string[]> orders = new List<string[]>();
+            foreach (ListViewItem item in orderList.Items)
+            {
+                List<string> order = new List<string>();
+                for (int i = 0; i < item.SubItems.Count; i++) 
+                    order.Add(item.SubItems[i].Text);
+                orders.Add(order.ToArray());
+            }
+            if (clientNetworkHandler.checkAvailable())
+            {
+                clientNetworkHandler.order(orders);
+                MessageBox.Show("주문이 완료 되었습니다.");
+            }
+            else
+                MessageBox.Show("서버가 현재 주문모드이지 않습니다.");
+            orderList.Items.Clear();
+            totalPriceLabel.Text = "0";
         }
 
         private void menuList_SelectedIndexChanged(object sender, EventArgs e)
@@ -114,6 +129,29 @@ namespace OrderClient
                 orderList.Focus();
                 orderList.Items[valueOfSelectRow].Selected = true;
             }
+        }
+
+        private void getMenusButton_Click(object sender, EventArgs e)
+        {
+            if (!clientNetworkHandler.connected())
+                connect();
+            else
+                getMenus();
+        }
+
+        private void connect()
+        {
+            if (clientNetworkHandler.connect())
+                getMenus();
+            else
+                MessageBox.Show("현재 서버에 연결할 수 없습니다.");
+        }
+        private void getMenus()
+        {
+            if (clientNetworkHandler.checkAvailable())
+                fillListView(clientNetworkHandler.getMenus());
+            else
+                MessageBox.Show("서버가 현재 주문모드이지 않습니다.");
         }
     }
 }
