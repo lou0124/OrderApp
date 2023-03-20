@@ -41,21 +41,13 @@ namespace OrderClient
             }
         }
 
-        private void fillListView(List<string[]> menus)
-        {
-            menuList.Items.Clear();
-            List<string[]> sortedMenus = menus.OrderBy(p => p[0]).ToList();
-            foreach (string[] menu in sortedMenus)
-                menuList.Items.Add(new ListViewItem(menu));
-        }
-
         private void orderButton_Click(object sender, EventArgs e)
         {
             List<string[]> orders = new List<string[]>();
             foreach (ListViewItem item in orderList.Items)
             {
                 List<string> order = new List<string>();
-                for (int i = 0; i < item.SubItems.Count; i++) 
+                for (int i = 0; i < item.SubItems.Count; i++)
                     order.Add(item.SubItems[i].Text);
                 orders.Add(order.ToArray());
             }
@@ -69,25 +61,6 @@ namespace OrderClient
             orderList.Items.Clear();
             totalPriceLabel.Text = "0";
         }
-
-        private void menuList_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            if (menuList.SelectedItems.Count != 0)
-                menuSelectRow = menuList.SelectedItems[0].Index;
-            else
-                menuSelectRow = null;
-            orderSelectRow = null;
-        }
-
-        private void orderList_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            if (orderList.SelectedItems.Count != 0)
-                orderSelectRow = orderList.SelectedItems[0].Index;
-            else
-                orderSelectRow = null;
-            menuSelectRow = null;
-        }
-
         private void plusButton_Click(object sender, EventArgs e)
         {
             if (orderSelectRow is int valueOfSelectRow)
@@ -118,7 +91,7 @@ namespace OrderClient
                     totalPrice -= price;
                     totalPriceLabel.Text = (int.Parse(totalPriceLabel.Text) - price).ToString();
                 }
-                else 
+                else
                 {
                     orderList.Items.RemoveAt(orderList.SelectedIndices[0]);
                     MessageBox.Show("상품이 취소되었습니다.");
@@ -139,6 +112,24 @@ namespace OrderClient
                 getMenus();
         }
 
+        private void menuList_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (menuList.SelectedItems.Count != 0)
+                menuSelectRow = menuList.SelectedItems[0].Index;
+            else
+                menuSelectRow = null;
+            orderSelectRow = null;
+        }
+
+        private void orderList_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (orderList.SelectedItems.Count != 0)
+                orderSelectRow = orderList.SelectedItems[0].Index;
+            else
+                orderSelectRow = null;
+            menuSelectRow = null;
+        }
+        
         private void connect()
         {
             if (clientNetworkHandler.connect())
@@ -152,6 +143,13 @@ namespace OrderClient
                 fillListView(clientNetworkHandler.getMenus());
             else
                 MessageBox.Show("서버가 현재 주문모드이지 않습니다.");
+        }
+        private void fillListView(List<string[]> menus)
+        {
+            menuList.Items.Clear();
+            List<string[]> sortedMenus = menus.OrderBy(p => p[0]).ToList();
+            foreach (string[] menu in sortedMenus)
+                menuList.Items.Add(new ListViewItem(menu));
         }
     }
 }

@@ -19,6 +19,55 @@ namespace OrderServer
             ServerNetworkHandler.Instance().available(addOrder);
         }
 
+        private void cookedButton_Click(object sender, EventArgs e)
+        {
+            if (orderList.SelectedItems.Count > 0)
+            {
+                int index = orderList.FocusedItem.Index;
+                orderList.Items.RemoveAt(index);
+                MessageBox.Show("조리가 완료 되었습니다.");
+            }
+            else
+                MessageBox.Show("선택된 항목이 없습니다.");
+        }
+
+        private void cancelOrderButton_Click(object sender, EventArgs e)
+        {
+            if (selectRow is int valueOfSelectRow)
+            {
+                string selectedOrderNum = orderList.Items[valueOfSelectRow].SubItems[0].Text;
+                string selectedDate = orderList.Items[valueOfSelectRow].SubItems[4].Text;
+
+                selectedDate = DateTime.ParseExact(selectedDate, "yyyy-MM-dd HH:mm:ss", null).ToString("yyyyMMddHHmmss");
+                string orderKey = selectedDate + selectedOrderNum.PadLeft(3, '0');
+
+                OrderDbHandler.Instance().excuteSql("DELETE FROM tblOrder WHERE order_key = " + orderKey);
+                orderList.Items.RemoveAt(orderList.SelectedIndices[0]);
+                MessageBox.Show("주문음식이 취소 되었습니다.");
+                selectRow = null;
+            }
+        }
+
+        private void backButton_Click(object sender, EventArgs e)
+        {
+            this.Owner.Visible = true;
+            this.Close();
+        }
+
+        private void orderList_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (orderList.SelectedItems.Count != 0)
+                selectRow = orderList.SelectedItems[0].Index;
+            else
+                selectRow = null;
+        }
+
+        private void Order_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            ServerNetworkHandler.Instance().unavailable();
+            this.Owner.Visible = true;
+        }
+
         private void addOrder(List<string[]> orders)
         {
             foreach (string[] order in orders)
@@ -31,8 +80,8 @@ namespace OrderServer
                 string orderTime = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
                 string orderKey = DateTime.Now.ToString("yyyyMMddHHmmss") + orderNum.PadLeft(3, '0');
 
-                OrderDbHandler.excuteSql("INSERT INTO tblOrder " +
-                    "VALUES ('" + orderKey + "', " + orderNum + ", " + clientNum + ", '" + menu + "', " + count + ", " + totalPrice + ", '"+ orderTime + "')");
+                OrderDbHandler.Instance().excuteSql("INSERT INTO tblOrder " +
+                    "VALUES ('" + orderKey + "', " + orderNum + ", " + clientNum + ", '" + menu + "', " + count + ", " + totalPrice + ", '" + orderTime + "')");
 
                 ListViewItem listViewItem = new ListViewItem();
                 listViewItem.Text = orderNum;
@@ -46,35 +95,5 @@ namespace OrderServer
             clientNumber = (clientNumber + 1) % 1000;
         }
 
-        private void backButton_Click(object sender, EventArgs e)
-        {
-            this.Owner.Visible = true;
-            this.Close();
-        }
-
-        private void Order_FormClosed(object sender, FormClosedEventArgs e)
-        {
-            ServerNetworkHandler.Instance().unavailable();
-            this.Owner.Visible = true;
-        }
-
-        private void cancelOrderButton_Click(object sender, EventArgs e)
-        {
-            if (selectRow is int valueOfSelectRow)
-            {
-                OrderDbHandler.excuteSql("DELETE FROM tblOrder WHERE order_num = " + orderList.Items[valueOfSelectRow].SubItems[0].Text);
-                orderList.Items.RemoveAt(orderList.SelectedIndices[0]);
-                MessageBox.Show("주문음식이 취소 되었습니다.");
-                selectRow = null;
-            }
-        }
-
-        private void orderList_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            if (orderList.SelectedItems.Count != 0)
-                selectRow = orderList.SelectedItems[0].Index;
-            else
-                selectRow = null;
-        }
     }
 }

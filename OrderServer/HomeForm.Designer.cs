@@ -30,6 +30,7 @@
         {
             this.orderModeButton = new System.Windows.Forms.Button();
             this.modifyModeButton = new System.Windows.Forms.Button();
+            this.historyButton = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // orderModeButton
@@ -54,11 +55,23 @@
             this.modifyModeButton.UseVisualStyleBackColor = true;
             this.modifyModeButton.Click += new System.EventHandler(this.modifyModeButton_Click);
             // 
+            // historyButton
+            // 
+            this.historyButton.Font = new System.Drawing.Font("굴림", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
+            this.historyButton.Location = new System.Drawing.Point(304, 313);
+            this.historyButton.Name = "historyButton";
+            this.historyButton.Size = new System.Drawing.Size(194, 100);
+            this.historyButton.TabIndex = 2;
+            this.historyButton.Text = "주문내역";
+            this.historyButton.UseVisualStyleBackColor = true;
+            this.historyButton.Click += new System.EventHandler(this.historyButton_Click);
+            // 
             // HomeForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);
+            this.Controls.Add(this.historyButton);
             this.Controls.Add(this.modifyModeButton);
             this.Controls.Add(this.orderModeButton);
             this.Name = "HomeForm";
@@ -73,6 +86,7 @@
 
         private System.Windows.Forms.Button orderModeButton;
         private System.Windows.Forms.Button modifyModeButton;
+        private System.Windows.Forms.Button historyButton;
     }
 }
 

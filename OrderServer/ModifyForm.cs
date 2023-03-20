@@ -20,15 +20,15 @@ namespace OrderServer
 
         private void ModifyForm_Load(object sender, EventArgs e)
         {
-            fillListView(OrderDbHandler.ReadTable("tblMenu"));
+            fillListView(OrderDbHandler.Instance().ReadTable("tblMenu"));
         }
         private void addButton_Click(object sender, EventArgs e)
         {
             if (inputCheck("SELECT * FROM tblMenu " +
                            "WHERE menu = '" + menuTextBox.Text + "'"))
             {
-                OrderDbHandler.excuteSql("INSERT INTO tblMenu VALUES ('" + menuTextBox.Text + "', " + priceTextBox.Text + ")");
-                fillListView(OrderDbHandler.ReadTable("tblMenu"));
+                OrderDbHandler.Instance().excuteSql("INSERT INTO tblMenu VALUES ('" + menuTextBox.Text + "', " + priceTextBox.Text + ")");
+                fillListView(OrderDbHandler.Instance().ReadTable("tblMenu"));
                 MessageBox.Show("메뉴가 추가 되었습니다.");
             }
         }
@@ -37,9 +37,9 @@ namespace OrderServer
         {
             if (selectRow is int valueOfSelectRow)
             {
-                OrderDbHandler.excuteSql("DELETE FROM tblMenu " +
+                OrderDbHandler.Instance().excuteSql("DELETE FROM tblMenu " +
                                          "WHERE  menu_num = " + menuList.Items[valueOfSelectRow].SubItems[0].Text);
-                fillListView(OrderDbHandler.ReadTable("tblMenu"));
+                fillListView(OrderDbHandler.Instance().ReadTable("tblMenu"));
                 MessageBox.Show("메뉴가 삭제 되었습니다.");
             }
         }
@@ -50,15 +50,15 @@ namespace OrderServer
             if (menuList.SelectedItems.Count != 0 && inputCheck("SELECT * FROM tblMenu " +
                                                                 "WHERE menu = '" + menuTextBox.Text + "' AND menu_num != " + menu_num))
             {
-                OrderDbHandler.excuteSql("UPDATE tblMenu SET menu = '" + menuTextBox.Text + "', price = '" + priceTextBox.Text + "' WHERE menu_num = '" + menu_num + "'");
-                fillListView(OrderDbHandler.ReadTable("tblMenu"));
+                OrderDbHandler.Instance().excuteSql("UPDATE tblMenu SET menu = '" + menuTextBox.Text + "', price = '" + priceTextBox.Text + "' WHERE menu_num = '" + menu_num + "'");
+                fillListView(OrderDbHandler.Instance().ReadTable("tblMenu"));
                 MessageBox.Show("메뉴가 수정 되었습니다.");
             }
         }
 
         private bool inputCheck(string select)
         {
-            if (OrderDbHandler.checkRecord(select))
+            if (OrderDbHandler.Instance().checkRecord(select))
             {
                 MessageBox.Show("중복된 이름의 메뉴가 있습니다.");
                 return false;

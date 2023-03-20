@@ -44,5 +44,14 @@ namespace OrderServer
             modifyForm.ShowDialog();
             modifyForm.Dispose();
         }
+
+        private void historyButton_Click(object sender, EventArgs e)
+        {
+            this.Visible = false;
+            HistoryForm historyForm = new HistoryForm();
+            historyForm.Owner = this;
+            historyForm.ShowDialog();
+            historyForm.Dispose();
+        }
     }
 }

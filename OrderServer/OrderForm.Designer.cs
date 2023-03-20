@@ -37,7 +37,6 @@
             this.order_time = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.cookedButton = new System.Windows.Forms.Button();
             this.cancelOrderButton = new System.Windows.Forms.Button();
-            this.button1 = new System.Windows.Forms.Button();
             backButton = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
@@ -106,6 +105,7 @@
             this.cookedButton.TabIndex = 2;
             this.cookedButton.Text = "조리완료";
             this.cookedButton.UseVisualStyleBackColor = true;
+            this.cookedButton.Click += new System.EventHandler(this.cookedButton_Click);
             // 
             // cancelOrderButton
             // 
@@ -118,22 +118,11 @@
             this.cancelOrderButton.UseVisualStyleBackColor = true;
             this.cancelOrderButton.Click += new System.EventHandler(this.cancelOrderButton_Click);
             // 
-            // button1
-            // 
-            this.button1.Location = new System.Drawing.Point(661, 315);
-            this.button1.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(86, 29);
-            this.button1.TabIndex = 4;
-            this.button1.Text = "임시추가";
-            this.button1.UseVisualStyleBackColor = true;
-            // 
             // OrderForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(815, 454);
-            this.Controls.Add(this.button1);
             this.Controls.Add(this.cancelOrderButton);
             this.Controls.Add(this.cookedButton);
             this.Controls.Add(this.orderList);
@@ -157,6 +146,5 @@
         private System.Windows.Forms.Button cookedButton;
         private System.Windows.Forms.Button cancelOrderButton;
         private System.Windows.Forms.ColumnHeader guest_num;
-        private System.Windows.Forms.Button button1;
     }
 }

@@ -107,7 +107,7 @@ namespace OrderServer
 
         private void sendMenus(BinaryWriter binaryWriter)
         {
-            List<String[]> menus = OrderDbHandler.ReadTable("tblMenu");
+            List<String[]> menus = OrderDbHandler.Instance().ReadTable("tblMenu");
             binaryWriter.Write(menus.Count);
             if (menus.Count == 0)
                 binaryWriter.Write(0);

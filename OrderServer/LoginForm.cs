@@ -39,7 +39,7 @@ namespace OrderServer
 
         private void LoginForm_Load(object sender, EventArgs e)
         {
-            accounts = OrderDbHandler.ReadTable("tblAccount");
+            accounts = OrderDbHandler.Instance().ReadTable("tblAccount");
         }
     }
 }
